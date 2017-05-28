@@ -1,0 +1,156 @@
+body {
+  font-family: 'Share Tech Mono' !important;
+  padding-top: 70px;
+  background:#8F00FF url('../images/grid.png');
+}
+
+h1 {
+  margin:0 0 1em;
+  text-align: center;
+  color:#fff;
+}
+
+h2 {
+  font-size:1.7em;
+  line-height:1.7em;
+}
+
+#content-wrapper {
+  padding:0 50px;
+}
+
+#content-wrapper section>dl,
+#content-wrapper section>ul {
+  margin:0;
+  padding:0;
+}
+
+#content-wrapper section dl dt {
+  font-weight:bold;
+}
+
+#content-wrapper .row {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.page-header {
+  border:none;
+  margin:0;
+}
+
+.panel {
+  border:none;
+}
+
+#section-wrapper section {
+  border:4px ridge #aaaa33;
+  border-radius:4px;
+  background-color:#ffffff;
+  color:#333399;
+  width:100%;
+}
+
+#section-wrapper > div {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;  
+}
+
+#resume-navbar {
+  background-color:#ffffff;
+  color:#333399;
+  min-height:auto;
+  border:0 ridge #aaaa33;
+  border-width:4px 0;
+  border-radius: 4px;
+}
+
+section h2 {
+  margin-top:0;
+}
+
+section#details h2::before {
+  content:" ";
+  background:transparent url("../images/8bitportrait.png") no-repeat;
+  width:150px;
+  height:150px;
+  margin:38px 15px 15px -16px;
+  display:block;
+  float:left;
+}
+
+section#details dl {
+  display:flex;
+  flex-flow:row wrap;
+}
+
+section#details dl.wide {
+  clear:both;
+  border-top:1px solid #666666;
+}
+
+section#details dl dt {
+  flex:1 0 40%;
+  margin:0;
+  padding:1% 0;
+  border-bottom:1px solid #666666;
+}
+
+section#details dl dd {
+  flex:3 0 60%;
+  margin:0;
+  padding:1% 0;
+  border-bottom:1px solid #666666;
+}
+
+section#details dt:last-of-type,
+section#details dd:last-child {
+  border-width:0;
+}
+
+.minion,
+.familiar {
+  width:75px;
+  height:75px;
+  border:4px ridge #333399;
+  border-radius: 3px;
+  display:inline-block;
+  margin: 0 5px;
+}
+
+#loki {
+  background:transparent url("../images/loki.png") no-repeat;
+}
+
+.ui-tooltip {
+  color:#000;
+  background-color:#fff;
+  border:2px solid green;
+  width:150px;
+  padding:15px;
+}
+
+section#skills div.panel-body>ul {
+  display:flex;
+  flex-direction:row;
+  flex-wrap:wrap;
+  list-style:none;
+}
+
+section#skills div.panel-body>ul>li {
+  font-weight:bold;
+  flex:1 0 50%;
+}
+
+section#skills ul ul {
+  list-style: disc;
+  margin:.7em 0;
+}
+
+section#skills ul ul li {
+  font-weight:normal;
+}

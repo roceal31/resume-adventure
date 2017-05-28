@@ -1,0 +1,270 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"col-md-",
+				"col-md-3"
+			],
+			[
+				"col-m",
+				"col-md-9"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "game.html",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "index.html",
+			"settings":
+			{
+				"buffer_size": 8773,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/roceal/Sites/resume-adventure/slice/css/custom.css",
+		"/Users/roceal/Sites/resume-adventure/slice/js/custom.js",
+		"/Users/roceal/Sites/resume-adventure/slice/index.html",
+		"/Users/roceal/Sites/portfolio/app/views/layouts/application.html.erb",
+		"/Users/roceal/Sites/portfolio/app/assets/stylesheets/resume.scss",
+		"/Users/roceal/Sites/portfolio/app/assets/stylesheets/application.css",
+		"/Users/roceal/Sites/portfolio/app/views/resume/index.html.erb",
+		"/Users/roceal/Sites/portfolio/html/index.html",
+		"/Users/roceal/Downloads/backup-innerwest.amba.org.au-4-11-2017/public_html/templates/iwmbawebsite/index.php",
+		"/Users/roceal/Downloads/backup-innerwest.amba.org.au-4-11-2017/public_html/templates/iwmbawebsite/templateDetails.xml",
+		"/Users/roceal/Downloads/backup-innerwest.amba.org.au-4-11-2017/public_html/templates/iwmbawebsite/params.ini",
+		"/Users/roceal/Documents/dev/railsgirls/config/routes.rb",
+		"/Users/roceal/Documents/dev/railsgirls/app/models/comment.rb",
+		"/Users/roceal/Documents/dev/railsgirls/app/models/idea.rb",
+		"/Users/roceal/Documents/dev/railsgirls/app/views/layouts/application.html.erb",
+		"/Users/roceal/Documents/dev/railsgirls/app/views/ideas/edit.html.erb",
+		"/Users/roceal/Documents/dev/railsgirls/app/controllers/ideas_controller.rb",
+		"/Users/roceal/Documents/dev/railsgirls/app/views/ideas/show.html.erb",
+		"/Users/roceal/Documents/dev/railsgirls/app/views/comments/_form.html.erb",
+		"/Users/roceal/Documents/dev/railsgirls/app/views/ideas/_form.html.erb",
+		"/Users/roceal/Documents/dev/railsgirls/app/views/pages/info.html.erb",
+		"/Users/roceal/Documents/dev/railsgirls/Gemfile",
+		"/Users/roceal/Documents/dev/railsgirls/app/assets/stylesheets/application.css"
+	],
+	"find":
+	{
+		"height": 0.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "game.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "index.html",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 8773,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "resume-adventure-slice.sublime-project",
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 251.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+		"max_columns": 1
+	}
+}
