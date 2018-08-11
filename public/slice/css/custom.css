@@ -2,6 +2,8 @@ body {
   font-family: 'Share Tech Mono' !important;
   padding-top: 70px;
   background:#8F00FF url('../images/grid.png');
+  color:#5E5E5E;
+  position: relative;
 }
 
 h1 {
@@ -36,6 +38,49 @@ h2 {
     display: flex;
 }
 
+#loading-screen {
+  border:4px ridge #FFD479;
+  border-radius:4px;
+  display: none;
+}
+
+#game-map {
+  display:block;
+  /* TODO: position me! */
+}
+
+#loading-screen pre {
+  background-color: transparent;
+  border:0 none;
+  width:76%;
+  margin:0 auto;
+}
+
+#loading-screen .loading-text {
+  width:25%;
+  padding:15px;
+  margin:0 auto;
+  background-color:#efefef;
+  text-align:center;
+}
+
+@keyframes loading {
+    0%   { background-position: 0 0; }
+    25%  { background-position: 0 100%; }
+    50%  { background-position: 100% 0; }
+    75%  { background-position: 100% 100%; }
+}
+
+#loading-screen .loading {
+  width:32px;
+  height:32px;
+  background:url('../images/adventurer-sprite.gif') no-repeat;
+  margin:10px auto;
+  animation: loading 12s steps(1, end) infinite;
+}
+
+
+
 .page-header {
   border:none;
   margin:0;
@@ -46,10 +91,9 @@ h2 {
 }
 
 #section-wrapper section {
-  border:4px ridge #aaaa33;
+  border:4px ridge #FFD479;
   border-radius:4px;
   background-color:#ffffff;
-  color:#333399;
   width:100%;
 }
 
@@ -62,25 +106,32 @@ h2 {
 
 #resume-navbar {
   background-color:#ffffff;
-  color:#333399;
   min-height:auto;
-  border:0 ridge #aaaa33;
-  border-width:4px 0;
+  border:0 ridge #FFD479;
+  border-width:0 0 4px;
   border-radius: 4px;
+}
+
+#resume-navbar .nav-pills>li.active>a {
+  background-color:#008F00;
 }
 
 section h2 {
   margin-top:0;
 }
 
+section#details div.panel-heading {
+  position:relative;
+}
 section#details h2::before {
   content:" ";
   background:transparent url("../images/8bitportrait.png") no-repeat;
   width:150px;
   height:150px;
-  margin:38px 15px 15px -16px;
   display:block;
-  float:left;
+  position:absolute;
+  top:60px;
+  left:15px;
 }
 
 section#details dl {
@@ -116,7 +167,7 @@ section#details dd:last-child {
 .familiar {
   width:75px;
   height:75px;
-  border:4px ridge #333399;
+  border:4px ridge #5E5E5E;
   border-radius: 3px;
   display:inline-block;
   margin: 0 5px;
