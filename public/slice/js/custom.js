@@ -36,6 +36,7 @@ var coordinates = function() {
 	}
 };
 
+// Map factory function
 var map = function(settings) {
 	var mapObj = {
 		mapImage: {},
@@ -64,7 +65,7 @@ var map = function(settings) {
 
 		isPointOnMap: function(x, y) {
 			if(this.context) {
-				console.log('is point on map', x, y);
+				this.refresh();
 				var imgData = this.context.getImageData(x, y, 1, 1);
 				var isOpaque = (imgData.data[3] != 0);
 				return isOpaque;
@@ -78,15 +79,34 @@ var map = function(settings) {
 	return mapObj;
 }
 
+// Interactive zone factory function
+var mapZone = function(settings) {
+	var zoneObj = {
+		position: {
+			screen: [0,0]
+		},
+		image: {},
+		context: {},
+		width: {},
+		height: {},
+		monster: {},
+		state: {},
+	};
+
+	return zoneObj;
+}
+
+// Adventurer factory function
 var adventurer = function(settings) {
 	var obj = {
 		position: coordinates(),
 		frameIndex: 0,
 		tickCount: 0,
 		ticksPerFrame: settings.ticksPerFrame || 8,
+		ticksPerMove: settings.ticksPerMove || 4,
 		isMoving: false,
 		direction: settings.direction || 0, // 0 = down, 1 = left, 2 = up, 3 = right
-		movingTo: {},
+		movingTo: [0,0],
 		context: {},
 		image: {},
 		map: {},
@@ -94,7 +114,6 @@ var adventurer = function(settings) {
 		height: settings.height || 32,
 
 		init: function() {
-			console.log('adventurer init', this);
 			this.image = new Image();
 			this.image.src = '/slice/images/adventurer-sprite.png';
 			var thisAdventurer = this;
@@ -117,6 +136,15 @@ var adventurer = function(settings) {
 					this.width, // image width
 					this.height // image height
 				);
+				/* Debug position
+				this.context.fillStyle = 'red';
+				this.context.fillRect(this.position.screen[0], this.position.screen[1], 2, 2);
+
+				var feetX = this.position.screen[0] + 16;
+				var feetY = this.position.screen[1] + this.height;
+				this.context.fillStyle = 'blue';
+				this.context.fillRect(feetX, feetY, 2, 2);
+				*/
 			}
 		},
 
@@ -124,6 +152,10 @@ var adventurer = function(settings) {
 			// cycle through animation
 			if(this.isMoving) {
 				this.tickCount += 1;
+				if(this.tickCount > this.ticksPerMove) {
+					this.map.refresh();
+					this.updatePosition();
+				}
 				if(this.tickCount > this.ticksPerFrame) {
 					this.tickCount = 0;
 					this.frameIndex = (this.frameIndex + 1) % 8;
@@ -132,16 +164,23 @@ var adventurer = function(settings) {
 		},
 
 		move: function(direction) {
-			var newPositionX = this.getNextPositionX(direction) + 16;
-			var newPositionY = this.getNextPositionY(direction) + this.height;
-			var newPositionOnMap = this.map.isPointOnMap(newPositionX, newPositionY);
-			if(newPositionOnMap) {
-				this.isMoving = true;
+			if(!this.isMoving) {
 				this.direction = direction;
-				this.clear();
-				this.updatePosition(direction);
-				window.setTimeout(this.stop, 1200, this);
+				this.movingTo[0] = this.getNextPositionX(direction);
+				this.movingTo[1] = this.getNextPositionY(direction);
+				if(this.canMoveToPoint(this.movingTo[0], this.movingTo[1])) {
+					this.isMoving = true;
+					this.direction = direction;
+					//window.setTimeout(this.stop, 1200, this);
+				}
 			}
+		},
+
+		canMoveToPoint: function(newX, newY) {
+			this.clear();
+			var newPositionOnMap = this.map.isPointOnMap(newX + 16, newY + this.height);
+			this.render();
+			return newPositionOnMap;
 		},
 
 		clear: function() {
@@ -153,27 +192,47 @@ var adventurer = function(settings) {
 			}
 		},
 
-		updatePosition: function(direction) {
+		updatePosition: function() {
 			// for now let's just brute force this thing
 			// TODO: make this elegant with an actual coordinate
 			// calculation
-			switch(direction) {
-				case 2: // up
-				this.position.screen[1] -= 16;
-				break;
+			if(this.position.screen[0] != this.movingTo[0] || this.position.screen[1] != this.movingTo[1]) {
+				switch(this.direction) {
+					case 1:
+						this.goLeft();
+						break;
 
-				case 0: // down
-				this.position.screen[1] += 16;
-				break;
+					case 3:
+						this.goRight();
+						break;
 
-				case 1: // left
-				this.position.screen[0] -= 26;
-				break;
+					case 0:
+						this.goDown();
+						break;
 
-				case 3: // right
-				this.position.screen[0] += 26;
-				break;
+					case 2:
+						this.goUp();
+						break;
+				}
+			} else {
+				this.stop(this);
 			}
+		},
+
+		goLeft: function() {
+			this.position.screen[0]--;
+		},
+
+		goRight: function() {
+			this.position.screen[0]++;
+		},
+
+		goUp: function() {
+			this.position.screen[1]--;
+		},
+
+		goDown: function() {
+			this.position.screen[1]++;
 		},
 
 		getNextPositionX: function(direction) {
@@ -297,7 +356,7 @@ function loadGame() {
 	$(loader).hide('scale', 600, function() {
 		$(document).off('keypress', handleLoadingKeypress);
 		$(document).off('keydown', handleLoadingKeypress);
-		initMap();
+		initScene();
 	});
 }
 
@@ -320,11 +379,12 @@ function initScene() {
 
 function gameLoop() {
 	if(currentMap) {
-		currentMap.refresh();
-	}
-	if(currentAdventurer) {
-		currentAdventurer.update();
-		currentAdventurer.render();
+		if(currentAdventurer) {
+			currentAdventurer.clear();
+			currentAdventurer.update();
+			currentMap.refresh();
+			currentAdventurer.render();
+		}
 	}
 	requestAnimFrame(gameLoop);
 }

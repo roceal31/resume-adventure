@@ -49,11 +49,23 @@ h2 {
   /* TODO: position me! */
 }
 
+#loading-screen .panel-body {
+  display:flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+#loading-screen .panel-body > div.title-text {
+  flex: 1 1 100%;
+  align-content: center;
+  text-align: center;
+}
+
 #loading-screen pre {
   background-color: transparent;
   border:0 none;
-  width:76%;
-  margin:0 auto;
+  display:inline-block;
 }
 
 #loading-screen .loading-text {
