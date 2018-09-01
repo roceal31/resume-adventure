@@ -10,26 +10,25 @@
 		<link rel="stylesheet" type="text/css" href="css/custom.css">
 	</head>
 	<body>
-		<div id="content-wrapper">
-			<main>
-				<div id="resume">
-					<nav class="navbar navbar-default navbar-fixed-top" id="resume-navbar">
-					    <ul class="nav nav-pills" role="tablist">
-					      <li role="presentation"><a href="#goals" aria-controls="goals" role="tab" data-toggle="tab" data-key="1">Career Goals &amp; Ideals</a></li>
-					      <li role="presentation"><a href="#skills" aria-controls="skills" role="tab" data-toggle="tab" data-key="2">Skills</a></li>
-					      <li role="presentation"><a href="#employment" aria-controls="employment" role="tab" data-toggle="tab" data-key="3">Employment History</a></li>
-					      <li role="presentation"><a href="#education" aria-controls="education" role="tab" data-toggle="tab" data-key="4">Education &amp; Training</a></li>
-					      <li role="presentation"><a href="#volunteer" aria-controls="volunteer" role="tab" data-toggle="tab" data-key="5">Volunteering / Personal Projects</a></li>
-					      <li role="presentation"><a href="#print"><span class="glyphicon glyphicon-print"></span></a></li>
-					      <li role="presentation"><a href="#download"><span class="glyphicon glyphicon-download-alt"></span></a></li>
-					    </ul>
-					</nav>
+		<main>
+			<div id="resume">
+				<nav class="navbar navbar-default navbar-fixed-top" id="resume-navbar">
+				    <ul class="nav nav-pills" role="tablist">
+				      <li role="presentation"><a href="#goals" aria-controls="goals" role="tab" data-toggle="tab" data-key="1">Career Goals &amp; Ideals</a></li>
+				      <li role="presentation"><a href="#skills" aria-controls="skills" role="tab" data-toggle="tab" data-key="2">Skills</a></li>
+				      <li role="presentation"><a href="#employment" aria-controls="employment" role="tab" data-toggle="tab" data-key="3">Employment History</a></li>
+				      <li role="presentation"><a href="#education" aria-controls="education" role="tab" data-toggle="tab" data-key="4">Education &amp; Training</a></li>
+				      <li role="presentation"><a href="#volunteer" aria-controls="volunteer" role="tab" data-toggle="tab" data-key="5">Volunteering / Personal Projects</a></li>
+				      <li role="presentation"><a href="#print"><span class="glyphicon glyphicon-print"></span></a></li>
+				      <li role="presentation"><a href="#download"><span class="glyphicon glyphicon-download-alt"></span></a></li>
+				    </ul>
+				</nav>
 
-					<div class="panel" id="loading-screen">
-						<div class="panel-body">
-							<div class="title-text">
+				<div class="panel" id="loading-screen">
+					<div class="panel-body">
+						<div class="title-text">
 <pre>
- _______ _______ _______         _______ _______   
+_______ _______ _______         _______ _______   
 (  ____ (  ____ (  ____ |\     /(       (  ____ \
 | (    )| (    \| (    \| )   ( | () () | (    \/
 | (____)| (__   | (_____| |   | | || || | (__    
@@ -38,10 +37,10 @@
 | ) \ \_| (____//\____) | (___) | )   ( | (____/\
 |/   \__(_______\_______(_______|/     \(_______/
 </pre>
-							</div>
-							<div class="title-text">
+						</div>
+						<div class="title-text">
 <pre>
- _______ ______          _______ _      _________        _______ _______ 
+_______ ______          _______ _      _________        _______ _______ 
 (  ___  (  __  \|\     /(  ____ ( (    /\__   __|\     /(  ____ (  ____ \
 | (   ) | (  \  | )   ( | (    \|  \  ( |  ) (  | )   ( | (    )| (    \/
 | (___) | |   ) | |   | | (__   |   \ | |  | |  | |   | | (____)| (__    
@@ -50,23 +49,47 @@
 | )   ( | (__/  ) \   / | (____/| )  \  |  | |  | (___) | ) \ \_| (____/\
 |/     \(______/   \_/  (_______|/    )_)  )_(  (_______|/   \__(_______/
 </pre>
-							</div>
-							<div class="loading-text">
-								<div class="loading"></div>
-								<p><small>(Apologies to Lord British)</small></p>
-								<p>ESC - Just give me a CV</p>
-								<p>RETURN - Play along</p>
+						</div>
+						<div class="loading-text">
+							<div class="loading"></div>
+							<p><small>(Apologies to Lord British)</small></p>
+							<p>ESC - Just give me a CV</p>
+							<p>RETURN - Play along</p>
+						</div>
+					</div>
+				</div>
+
+				<canvas id="game-map">
+				</canvas>
+				<div id="game-console" class="panel">
+					<div class="panel-body">
+						<div class="movement-key">
+							<h1>Controls</h1>
+							<p>Move:<br/>
+							<span class="glyphicon glyphicon-arrow-up"></span>
+							<span class="glyphicon glyphicon-arrow-left"></span>
+							<span class="glyphicon glyphicon-arrow-right"></span>
+							<span class="glyphicon glyphicon-arrow-down"></span></p>
+						</div>
+						<div class="adventurer-stats">
+							<h1>Stats</h1>
+							<p class="health">Health:<br/>
+							<span class="glyphicon glyphicon-heart"></span>
+							<span class="glyphicon glyphicon-heart"></span>
+							<span class="glyphicon glyphicon-heart"></span>
+							<span class="glyphicon glyphicon-heart"></span>
+							<span class="glyphicon glyphicon-heart"></span></p>								
+						</div>
+						<div class="game-messages">
+							<h1>The Story Thus Far</h1>
+							<div id="game-log">
+								
 							</div>
 						</div>
 					</div>
-
-					<canvas id="game-map" width="1024" height="800">
-					</canvas>
-					<div id="game-console">
-					</div>
 				</div>
-			</main>
-		</div>
+			</div>
+		</main>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
 		<!-- Latest compiled and minified JavaScript -->

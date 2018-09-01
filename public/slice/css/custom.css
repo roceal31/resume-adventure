@@ -1,8 +1,8 @@
 body {
   font-family: 'Share Tech Mono' !important;
-  padding-top: 70px;
-  background:#8F00FF url('../images/grid.png');
-  color:#5E5E5E;
+  padding-top: 45px;
+  background:#3DA600;
+  color:#FFFFFF;
   position: relative;
 }
 
@@ -46,7 +46,58 @@ h2 {
 
 #game-map {
   display:block;
-  /* TODO: position me! */
+}
+
+#game-console {
+  display:none; /* delete me */
+  position: absolute;
+  width: 250px;
+  min-height: 250px;
+  top: 65px;
+  left: 25px;
+}
+
+#game-console .panel-body {
+  display:flex;
+  flex-flow:row wrap;
+}
+
+#game-console h1 {
+  font-size:1.2em;
+  color:inherit;
+  padding:4px 0;
+  margin:0;
+}
+
+#game-console .panel-body > div {
+  flex:1 0 50%;
+  border:1px dotted #5E5E5E;
+}
+
+#game-console .adventurer-stats .glyphicon-heart {
+  color:#CC4511;
+}
+
+#game-log {
+  height:120px;
+  overflow-y:scroll;
+}
+
+#game-log::-webkit-scrollbar {
+  width:8px;
+}
+
+#game-log::-webkit-scrollbar-track {
+  background-color: #EFEFEF;
+  border:1px solid #1D8600;
+}
+
+#game-log::-webkit-scrollbar-thumb {
+    background: #3DA600;
+}
+
+#game-console .game-messages #game-log p:before {
+  content:"> ";
 }
 
 #loading-screen .panel-body {
@@ -90,8 +141,6 @@ h2 {
   margin:10px auto;
   animation: loading 12s steps(1, end) infinite;
 }
-
-
 
 .page-header {
   border:none;
