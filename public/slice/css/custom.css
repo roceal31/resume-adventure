@@ -2,7 +2,7 @@ body {
   font-family: 'Share Tech Mono' !important;
   padding-top: 45px;
   background:#3DA600;
-  color:#FFFFFF;
+  /*color:#FFFFFF;*/
   position: relative;
 }
 
@@ -46,10 +46,11 @@ h2 {
 
 #game-map {
   display:block;
+  min-width:1400px;
+  min-height:800px;
 }
 
 #game-console {
-  display:none; /* delete me */
   position: absolute;
   width: 250px;
   min-height: 250px;

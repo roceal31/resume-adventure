@@ -1,7 +1,7 @@
 var loader;
 var canvas = document.getElementById('game-map');
-canvas.setAttribute('width', $(window).width());
-canvas.setAttribute('height', $(window).height());
+canvas.setAttribute('width', $(canvas).css('min-width').replace(/\D/g, ''));
+canvas.setAttribute('height', $(canvas).css('min-height').replace(/\D/g, ''));
 var context = canvas ? canvas.getContext('2d') : null;
 
 var currentGame;
@@ -22,11 +22,25 @@ var hexTile = function(settings) {
 		screen: [],
 		hexHeightUnit: 0,
 		hexWidthUnit: settings.gridSize || 10,
+		mapConfig: settings.mapConfig,
+		/*
 		strokeStyle: settings.strokeStyle || 'rgb(94,94,94)',
 		fillStyle: settings.fillStyle || 'transparent',
+		*/
+		zone: settings.zone,
 
 		s: function() {
 			return (0 - q - r);
+		},
+
+		init: function() {
+			this.calculateHexHeight();
+			this.drawHex(this.startX, this.startY);
+			this.drawCoords(this.startX, this.startY, this.q, this.r);
+			this.screen = hexTileObj.center();
+			if(this.zone != null) {
+				this.drawZone();
+			}
 		},
 
 		center: function() {
@@ -39,16 +53,16 @@ var hexTile = function(settings) {
 		},
 
 		drawCoords: function(startX, startY, q, r) {
-			this.context.fillStyle = 'lightgray';
+			this.context.fillStyle = 'black';
 			this.context.textAlign = 'center';
-			this.context.font = '6px sans-serif';
+			this.context.font = '7px sans-serif';
 			var x = startX + (this.hexWidthUnit / 2);
 			var y = startY + this.hexHeightUnit + 4;
 			this.context.fillText(q + ',' + r, x, y);
 		},
 
 		drawHex: function(startX, startY) {
-			this.context.strokeStyle = this.strokeStyle;
+			this.context.strokeStyle = this.mapConfig.strokeStyle;
 			var currentPoint = this.drawSideOne(startX, startY);
 			currentPoint = this.drawSideTwo(currentPoint[0], currentPoint[1]);
 			currentPoint = this.drawSideThree(currentPoint[0], currentPoint[1]);
@@ -98,9 +112,13 @@ var hexTile = function(settings) {
 
 		drawSideSix: function(startX, startY) {
 			this.context.closePath(startX, startY);
-			this.context.fillStyle = this.fillStyle;
+			this.context.fillStyle = this.mapConfig.fillStyle;
 			this.context.fill();
 			this.context.stroke();
+		},
+
+		drawZone: function() {
+
 		},
 
 		calculateHexHeight: function() {
@@ -110,89 +128,88 @@ var hexTile = function(settings) {
 		}
 	};
 
-	hexTileObj.calculateHexHeight();
-	hexTileObj.drawHex(settings.x, settings.y);
-	//hexTileObj.drawCoords(settings.x, settings.y, settings.q, settings.r);
-	hexTileObj.screen = hexTileObj.center();
+	//console.log('New hex tile', hexTileObj);
 	return hexTileObj;
+}
+
+var mapTile = function(settings) {
+	var tileObj = {
+		strokeStyle: settings.strokeStyle || 'rgb(94,94,94)',
+		fillStyle: settings.fillStyle || 'rgb(61,166,0)',
+		zoneId: settings.zoneId
+	};
+
+	return tileObj;
+}
+
+var map = function(settings) {
+	var mapObj = {
+		context: settings.context,
+		grid: settings.grid,
+		/*
+		   zones array elements: see mapZone factory function
+		 */
+		zones: [
+			mapZone({
+				id: 'forest',
+				context: this.context,
+				title: 'The Pursuant Forest',
+				logMessage: 'Forest blah blah blah lorem ipsum dolor sit amet.'
+			})
+		],
+		/*
+		   Map array elements:
+		     - null = empty space on the grid, default hexTile
+		     - mapTile = custom object to pass to hexTile with fill colour & zone id
+		 */
+		mapArray: [],
+
+		init: function(zones, mapArray) {
+			this.zones = zones;
+			this.mapArray = mapArray;
+			this.drawZones();
+		},
+
+		getZoneById: function(zoneId) {
+			var mapZone = this.zones.find(function(zone) {
+				return zone.id == zoneId;
+			});
+			return mapZone;
+		},
+
+		getZoneByCoordinates: function(q, r) {
+			var mapTile = this.mapArray[q][r];
+			if(mapTile.zoneId) {
+				return this.getZoneById(mapTile.zoneId);
+			}
+			return null;
+		},
+
+		drawZones: function() {
+			// TODO
+		}
+	};
+
+	return mapObj;
 }
 
 // Full game hex grid factory function
 var hexGrid = function(context) {
 	var gridObj = {
 		hexTiles: [],
-		mapTiles: [null, null, null, null, null, null,
-			[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null, null, null, null, 'rgb(169, 168, 121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null, null, null, null, 'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,'rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)',null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)','rgb(169,168,121)'],
-		    [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,'rgb(169,168,121)','rgb(169,168,121)'],
-		    ],
+		map: map({context:context}),
 		context: context,
 		gridSize: 10,
 		hexHeightUnit: 0,
 		width: 0,
 		height: 0,
 
-		init: function() {
+		init: function(mapArray) {
+			//console.log('hexGrid init, initialising map', mapArray);
+			this.map.context = this.context;
+			this.map.grid = this;
+			this.map.init(null, mapArray);
+
 			var canvas = $(context.canvas);
 			this.width = parseInt(canvas.prop('width'));
 			this.height = parseInt(canvas.prop('height'));
@@ -204,51 +221,31 @@ var hexGrid = function(context) {
 			var middleX = this.width / 2;
 			var middleY = this.height / 2;
 
-			var currentX = this.gridSize / 2;
-			var currentY = 0;
-
 			var numberRows = Math.floor(this.height / this.hexHeightUnit);
 			var numberCols = Math.floor(this.width / (this.gridSize * 2));
 			this.hexTiles = new Array(numberCols);
 
-			var q = 0, r = 0;
-			while(currentY < (this.height - this.hexHeightUnit)) {
-				while(currentX < (this.width - (this.gridSize))) {
-					var fillStyle = null;
-					if(this.mapTiles[q] && this.mapTiles[q][r]) {
-						fillStyle = this.mapTiles[q][r];
-					} 
-					var currentTile = hexTile({
-						context: this.context,
-						q: q,
-						r: r,
-						x: currentX,
-						y: currentY,
-						gridSize: this.gridSize,
-						fillStyle: fillStyle,
-					});
-					if(this.hexTiles[q] === undefined) {
-						this.hexTiles[q] = new Array(numberRows);
-					}
-					this.hexTiles[q][r] = currentTile;
-					currentX = currentX + (this.gridSize * 3);
-					q += 2;
-				}
-				currentY = currentY + (this.hexHeightUnit * 2);
-				r++;
-				currentX = this.gridSize / 2;
-				q = 0;
-			}
+			// Even columns
+			var currentX = this.gridSize / 2;
+			var currentY = 0;
+			this.buildHexGrid(0, currentX, currentY, numberRows, numberCols);
 
+			// Odd columns
 			currentX = this.gridSize * 2;
 			currentY = this.hexHeightUnit;
-			q = 1; r = 0;
+			this.buildHexGrid(1, currentX, currentY, numberRows, numberCols);			
+		},
+
+		buildHexGrid: function(colStart, startX, startY, numberRows, numberCols) {
+			var q = colStart, r = 0;
+			var currentX = startX, currentY = startY;
 			while(currentY < (this.height - this.hexHeightUnit)) {
 				while(currentX < (this.width - (this.gridSize))) {
-					var fillStyle = null;
-					if(this.mapTiles[q] && this.mapTiles[q][r]) {
-						fillStyle = this.mapTiles[q][r];
-					} 
+					var mapConfig = mapTile({});
+					if(this.map.mapArray[q] && this.map.mapArray[q][r]) {
+						mapConfig = mapTile(this.map.mapArray[q][r]);
+					}
+					//console.log('buildHexGrid', mapConfig);
 					var currentTile = hexTile({
 						context: this.context,
 						q: q,
@@ -256,37 +253,90 @@ var hexGrid = function(context) {
 						x: currentX,
 						y: currentY,
 						gridSize: this.gridSize,
-						fillStyle: fillStyle,
+						mapConfig: mapConfig
 					});
 					if(this.hexTiles[q] === undefined) {
 						this.hexTiles[q] = new Array(numberRows);
 					}
 					this.hexTiles[q][r] = currentTile;
+					currentTile.init();
 					currentX = currentX + (this.gridSize * 3);
 					q += 2;
 				}
 				currentY = currentY + (this.hexHeightUnit * 2);
 				r++;
-				currentX = this.gridSize * 2;
-				q = 1;
+				currentX = startX;//this.gridSize / 2;
+				q = colStart;
 			}
-			
 		},
+
+		refreshTiles: function(startTile) {
+			var startCol = startTile.q - 2;
+			var endCol = startCol + 5;
+			var startRow = startTile.r - 3;
+			var endRow = startTile.r + 1;
+
+			for(var col = startCol; col < endCol; col++) {
+				for(var row = startRow; row <= endRow; row++) {
+					var currTile = this.hexTiles[col][row];
+					currTile.init();
+					/*this.hexTiles[col][row] = hexTile({
+						context: this.context,
+						q: col,
+						r: row,
+						x: currTile.startX,
+						y: currTile.startY,
+						gridSize: this.gridSize,
+						mapConfig: currTile.mapConfig
+					});*/
+				}
+			}
+		},
+
+		isTileOnMap: function(hexTile) {
+			return (this.map.mapArray[hexTile.q][hexTile.r] != null);
+		}
 
 	}
 
 	return gridObj;
 }
 
+// Interactive zone factory function
+var mapZone = function(settings) {
+	var zoneObj = {
+		id: settings.id || '',
+		title: settings.title || '',
+		grid: settings.grid,
+		context: settings.context,
+		logMessage: settings.logMessage || '',
+		// TODO: image assets, monster, and zone state
+		image: {},
+		monster: {},
+		state: 0,
+
+		init: function(grid, context) {
+			this.grid = grid;
+			this.context = context;
+		},
+
+		drawTitle: function() {
+			// TODO
+		}
+	};
+
+	return zoneObj;
+}
+
 // Adventurer factory function
 var adventurer = function(settings) {
-	var obj = {
+	var advObj = {
 		position: settings.position, // current hex tile in the grid
 		grid: settings.grid,
 		frameIndex: 0,
 		tickCount: 0,
 		ticksPerFrame: settings.ticksPerFrame || 8,
-		ticksPerMove: settings.ticksPerMove || 1,
+		ticksPerMove: settings.ticksPerMove || 4,
 		isMoving: false,
 		direction: settings.direction || 0, // 0 = down, 1 = left, 2 = up, 3 = right
 		movingTo: {}, // hex tile to move to
@@ -327,15 +377,6 @@ var adventurer = function(settings) {
 					this.width, // image width
 					this.height // image height
 				);
-				/* Debug position
-				this.context.fillStyle = 'red';
-				this.context.fillRect(this.position.screen[0], this.position.screen[1], 2, 2);
-
-				var feetX = this.position.screen[0] + 16;
-				var feetY = this.position.screen[1] + this.height;
-				this.context.fillStyle = 'blue';
-				this.context.fillRect(feetX, feetY, 2, 2);
-				*/
 			}
 		},
 
@@ -355,26 +396,16 @@ var adventurer = function(settings) {
 
 		move: function(direction) {
 			if(!this.isMoving) {
-				this.direction = direction;
 				this.movingTo = this.getNextPosition(direction);
-				this.isMoving = true;
-				this.direction = direction;
-				/*
-				this.movingTo[0] = this.getNextPositionX(direction);
-				this.movingTo[1] = this.getNextPositionY(direction);
-				if(this.canMoveToPoint(this.movingTo[0], this.movingTo[1])) {
-					this.isMoving = true;
+				if(this.canMoveToTile(this.movingTo)) {
 					this.direction = direction;
-					//window.setTimeout(this.stop, 1200, this);
+					this.isMoving = true;
 				}
-				*/
 			}
 		},
 
-		canMoveToPoint: function(newX, newY) {
-			this.clear();
-			var newPositionOnMap = this.map.isPointOnMap(newX + 16, newY + this.height);
-			this.render();
+		canMoveToTile: function(hexTile) {
+			var newPositionOnMap = this.grid.isTileOnMap(hexTile);
 			return newPositionOnMap;
 		},
 
@@ -441,9 +472,10 @@ var adventurer = function(settings) {
 		},
 	};
 
-	return obj;
+	return advObj;
 };
 
+// Main game  object factory function
 var game = function(settings) {
 	var gameObj = {
 		grid: {},
@@ -452,13 +484,13 @@ var game = function(settings) {
 		log: {},
 		context: settings.context,
 
-		init: function(initMessage) {
+		init: function(initMessage, mapArray) {
 			this.console = $('#game-console');
 			this.log = $('#game-log');
 			this.log.html('<p>' + initMessage + '</p>');
 
 			this.grid = hexGrid(context);
-			this.grid.init();
+			this.grid.init(mapArray);
 
 			this.adventurer = adventurer({
 				context: this.context,
@@ -476,82 +508,13 @@ var game = function(settings) {
 		updateGame: function() {
 			this.adventurer.clear();
 			this.adventurer.update();
-			this.grid.init();
+			this.grid.refreshTiles(this.adventurer.position);
 			this.adventurer.render();
 		},
 
 	};
 
 	return gameObj;
-}
-
-// Map factory function
-/*
-var map = function(settings) {
-	var mapObj = {
-		mapImage: {},
-		map: {},
-		context: settings.context,
-		grid: {},
-
-		init: function() {
-			this.mapImage = new Image();
-			this.mapImage.src = '/slice/images/map.png';
-			var thisMap = this;
-			this.mapImage.onload = function () {
-				thisMap.refresh();
-			};
-			
-			this.map = $(canvas);
-			if(canvas && !this.map.is(':visible')) {
-				this.map.show('scale', 600);
-			}
-
-		},
-
-		refresh: function() {
-			if(this.context && this.mapImage) {
-				this.context.drawImage(this.mapImage, 0, 0);
-
-				this.grid = hexGrid(this.context);
-				this.grid.init();
-				console.log('grid created', this.grid);
-
-			}
-		},
-
-		isPointOnMap: function(x, y) {
-			if(this.context) {
-				this.refresh();
-				var imgData = this.context.getImageData(x, y, 1, 1);
-				var isOpaque = (imgData.data[3] != 0);
-				return isOpaque;
-			}
-
-			return false;
-		},
-
-	};
-
-	return mapObj;
-}
-*/
-
-// Interactive zone factory function
-var mapZone = function(settings) {
-	var zoneObj = {
-		position: {
-			screen: [0,0]
-		},
-		image: {},
-		context: {},
-		width: {},
-		height: {},
-		monster: {},
-		state: {},
-	};
-
-	return zoneObj;
 }
 
 function formatTooltipTitle() {
@@ -620,22 +583,33 @@ function loadResume() {
 	window.location = '/slice/index.html';
 }
 
+function handleMapLoad(data, status, xhr) {
+	//console.log('handleMapLoad', data);
+	initScene(data.mapArray);
+}
+
 function loadGame() {
+	jQuery.get({
+		url: '/slice/js/mapArray.json',
+		dataType: 'json',
+		success: handleMapLoad
+	});
 	$(loader).hide('scale', 600, function() {
 		$(document).off('keypress', handleLoadingKeypress);
 		$(document).off('keydown', handleLoadingKeypress);
-		initScene();
 	});
 }
 
-function initScene() {
+function initScene(mapArray) {
+	//console.log('initScene', mapArray);
 	currentGame = game({
 		context: context
+
 	});
 
 	currentGame.init('You find yourself standing at a dusty crossroads. Five paths '+
 		'stretch away into the distance. You suppose you must choose a direction ' +
-		'and start moving. Adventure isn\'t going to find itself!');
+		'and start moving. Adventure isn\'t going to find itself!', mapArray);
 
 	$(document).on('keypress', handleGameKeypress);
 	$(document).on('keydown', handleGameKeypress);
@@ -651,5 +625,7 @@ function gameLoop() {
 $(function() {
   initTooltips();
   //initGame();
-  initScene();
+  $.get( "js/mapArray.json", handleMapLoad, "json" ).error(function(err) {
+  	console.log('error', err);
+  });
 });
