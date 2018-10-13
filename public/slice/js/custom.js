@@ -23,11 +23,7 @@ var hexTile = function(settings) {
 		hexHeightUnit: 0,
 		hexWidthUnit: settings.gridSize || 10,
 		mapConfig: settings.mapConfig,
-		/*
-		strokeStyle: settings.strokeStyle || 'rgb(94,94,94)',
-		fillStyle: settings.fillStyle || 'transparent',
-		*/
-		zone: settings.zone,
+		zoneId: '',
 
 		s: function() {
 			return (0 - q - r);
@@ -36,10 +32,10 @@ var hexTile = function(settings) {
 		init: function() {
 			this.calculateHexHeight();
 			this.drawHex(this.startX, this.startY);
-			this.drawCoords(this.startX, this.startY, this.q, this.r);
+			//this.drawCoords(this.startX, this.startY, this.q, this.r);
 			this.screen = hexTileObj.center();
-			if(this.zone != null) {
-				this.drawZone();
+			if(this.mapConfig.zoneId) {
+				this.zoneId = this.mapConfig.zoneId;
 			}
 		},
 
@@ -76,7 +72,6 @@ var hexTile = function(settings) {
 			this.context.moveTo(currentX, currentY); // starting point of hexagon
 			var x = currentX + this.hexWidthUnit;
 			this.context.lineTo(x, currentY); // second point of hexagon
-			//this.context.stroke(); // draws top horizontal line
 			return [x,currentY];
 		},
 
@@ -84,7 +79,6 @@ var hexTile = function(settings) {
 			var x = currentX + (this.hexWidthUnit/2);
 			var y = currentY + this.hexHeightUnit;
 			this.context.lineTo(x, y);
-			//this.context.stroke();
 			return [x,y];
 		},
 
@@ -92,14 +86,12 @@ var hexTile = function(settings) {
 			var x = currentX - (this.hexWidthUnit/2);
 			var y = currentY + this.hexHeightUnit;
 			this.context.lineTo(x, y);
-			//this.context.stroke();
 			return [x,y];
 		},
 
 		drawSideFour: function(currentX, currentY) {
 			var x = currentX - this.hexWidthUnit;
 			this.context.lineTo(x, currentY);
-			//this.context.stroke();
 			return [x, currentY];
 		},
 
@@ -107,7 +99,6 @@ var hexTile = function(settings) {
 			var x = currentX - (this.hexWidthUnit/2);
 			var y = currentY - this.hexHeightUnit;
 			this.context.lineTo(x, y);
-			//this.context.stroke();
 		},
 
 		drawSideSix: function(startX, startY) {
@@ -115,10 +106,6 @@ var hexTile = function(settings) {
 			this.context.fillStyle = this.mapConfig.fillStyle;
 			this.context.fill();
 			this.context.stroke();
-		},
-
-		drawZone: function() {
-
 		},
 
 		calculateHexHeight: function() {
@@ -143,6 +130,7 @@ var mapTile = function(settings) {
 }
 
 var map = function(settings) {
+	console.log('map factory');
 	var mapObj = {
 		context: settings.context,
 		grid: settings.grid,
@@ -154,7 +142,9 @@ var map = function(settings) {
 				id: 'forest',
 				context: this.context,
 				title: 'The Pursuant Forest',
-				logMessage: 'Forest blah blah blah lorem ipsum dolor sit amet.'
+				logMessage: 'Forest blah blah blah lorem ipsum dolor sit amet.',
+				image: '/slice/images/forest-sprite.png',
+				imageCoords: [420,24]
 			})
 		],
 		/*
@@ -165,9 +155,10 @@ var map = function(settings) {
 		mapArray: [],
 
 		init: function(zones, mapArray) {
-			this.zones = zones;
+			if(zones) {
+				this.zones = zones;				
+			}
 			this.mapArray = mapArray;
-			this.drawZones();
 		},
 
 		getZoneById: function(zoneId) {
@@ -184,12 +175,9 @@ var map = function(settings) {
 			}
 			return null;
 		},
-
-		drawZones: function() {
-			// TODO
-		}
 	};
 
+	console.log('map factory built', mapObj);
 	return mapObj;
 }
 
@@ -233,7 +221,9 @@ var hexGrid = function(context) {
 			// Odd columns
 			currentX = this.gridSize * 2;
 			currentY = this.hexHeightUnit;
-			this.buildHexGrid(1, currentX, currentY, numberRows, numberCols);			
+			this.buildHexGrid(1, currentX, currentY, numberRows, numberCols);
+
+			this.buildMapZones();
 		},
 
 		buildHexGrid: function(colStart, startX, startY, numberRows, numberCols) {
@@ -270,31 +260,48 @@ var hexGrid = function(context) {
 			}
 		},
 
+		buildMapZones: function() {
+			console.log('buildMapZones', this.map);
+			var mapZoneCount = this.map.zones.length;
+			for(var i = 0; i < mapZoneCount; i++) {
+				var zone = this.map.zones[i];
+				console.log('Drawing zone', zone);
+				zone.init(420, 24);
+			}
+		},
+
 		refreshTiles: function(startTile) {
 			var startCol = startTile.q - 2;
 			var endCol = startCol + 5;
 			var startRow = startTile.r - 3;
 			var endRow = startTile.r + 1;
+			var zone = null;
 
 			for(var col = startCol; col < endCol; col++) {
 				for(var row = startRow; row <= endRow; row++) {
 					var currTile = this.hexTiles[col][row];
 					currTile.init();
-					/*this.hexTiles[col][row] = hexTile({
-						context: this.context,
-						q: col,
-						r: row,
-						x: currTile.startX,
-						y: currTile.startY,
-						gridSize: this.gridSize,
-						mapConfig: currTile.mapConfig
-					});*/
+					if(currTile.zoneId) {
+						zone = currTile.zoneId;
+					}
 				}
 			}
+			if(zone !== null) {
+				this.refreshZone(zone);
+			}
+		},
+
+		refreshZone: function(zoneId) {
+			var zone = this.map.getZoneById(zoneId);
+			zone.drawBackgroundImage();
 		},
 
 		isTileOnMap: function(hexTile) {
 			return (this.map.mapArray[hexTile.q][hexTile.r] != null);
+		},
+
+		isTileInZone: function(hexTile) {
+
 		}
 
 	}
@@ -311,13 +318,28 @@ var mapZone = function(settings) {
 		context: settings.context,
 		logMessage: settings.logMessage || '',
 		// TODO: image assets, monster, and zone state
+		imagePath: settings.image || '',
 		image: {},
+		imageCoords: settings.imageCoords || [],
 		monster: {},
 		state: 0,
 
-		init: function(grid, context) {
-			this.grid = grid;
-			this.context = context;
+		init: function(x, y) {
+			this.image = new Image();
+			this.image.src = this.imagePath;
+			console.log('mapZone init', this.image);
+
+			var zone = this;
+			$(this.image).on('load', function() {
+				zone.drawBackgroundImage();
+			});
+		},
+
+		drawBackgroundImage() {
+			//console.log('mapZone drawBackgroundImage', this.context, this.image);
+			if(this.context && this.image.src) {
+				this.context.drawImage(this.image, this.imageCoords[0], this.imageCoords[1]);
+			}
 		},
 
 		drawTitle: function() {
@@ -466,7 +488,7 @@ var adventurer = function(settings) {
 		stop: function(thisAdventurer) {
 			thisAdventurer.isMoving = false;
 			thisAdventurer.frameIndex = 0;
-			thisAdventurer.direction = 0;
+			//thisAdventurer.direction = 0;
 			this.position = this.movingTo;
 			this.movingTo = null;
 		},
