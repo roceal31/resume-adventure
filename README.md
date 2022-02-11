@@ -1,24 +1,20 @@
-# README
+# README - Resume Adventure
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Did you ever see your professional career as something resembling
+an adventure RPG? Each project is like a new quest where you level
+up in skills and experience along the way.
 
-Things you may want to cover:
+As a lover of old school computer games like Ultima, I decided
+to do something a little different for the next iteration of my
+online portfolio.
 
-* Ruby version
+Author: Andrea Roceal James <roceal31@gmail.com>
+Project URL: https://www.jngm.net/portfolio/
 
-* System dependencies
+## Tech Notes
 
-* Configuration
+This solution was written primarily in vanilla JavaScript, HTML, and CSS, hand-crafted by myself.
 
-* Database creation
+To run this solution locally:
 
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+[TBD]
