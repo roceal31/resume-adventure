@@ -1,5 +1,20 @@
 {
   "name": "resume-adventure",
   "private": true,
-  "dependencies": {}
+  "description": "Did you ever see your professional career as something resembling an adventure RPG? Each project is like a new quest where you level up in skills and experience along the way.",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/roceal31/resume-adventure.git"
+  },
+  "author": "Andrea James",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/roceal31/resume-adventure/issues"
+  },
+  "homepage": "https://github.com/roceal31/resume-adventure#readme"
 }
