@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/roceal31/resume-adventure/issues"
   },
-  "homepage": "https://github.com/roceal31/resume-adventure#readme"
+  "homepage": "https://github.com/roceal31/resume-adventure#readme",
+  "dependencies": {
+    "express": "^4.17.2"
+  }
 }
